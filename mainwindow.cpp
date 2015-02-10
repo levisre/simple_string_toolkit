@@ -33,7 +33,7 @@ void MainWindow::on_btn_Action_clicked()
     QCryptographicHash objHash((QCryptographicHash::Algorithm)ui->box_Algo->currentIndex());
     objHash.addData(ui->txt_Input->toPlainText().toLatin1());
     ui->txt_output->clear();
-    ui->txt_output->appendHtml(objHash.result().toHex().toUpper());
+    ui->txt_output->appendPlainText(objHash.result().toHex().toUpper());
 }
 
 //Convert to Base64
