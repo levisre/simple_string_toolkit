@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>538</width>
+    <height>392</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Simple String Toolkit</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QTabWidget" name="tab_group">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>521</width>
+      <height>371</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>2</number>
+    </property>
+    <widget class="QWidget" name="tab_hashing">
+     <attribute name="title">
+      <string>Hashing</string>
+     </attribute>
+     <widget class="QLabel" name="lbl_Input">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>62</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Input:</string>
+      </property>
+     </widget>
+     <widget class="QPlainTextEdit" name="txt_output">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>200</y>
+        <width>501</width>
+        <height>81</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPlainTextEdit" name="txt_Input">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>501</width>
+        <height>81</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="box_Algo">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>140</y>
+        <width>511</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>MD4</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>MD5</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SHA1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SHA224</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SHA256</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SHA384</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SHA512</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SHA3_224</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SHA3_256</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SHA3_384</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SHA3_512</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QPushButton" name="btn_Action">
+      <property name="geometry">
+       <rect>
+        <x>-10</x>
+        <y>290</y>
+        <width>531</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>CALCULATE HASH!</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_algo">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>120</y>
+        <width>62</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Algorithm:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_output">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>170</y>
+        <width>62</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Result:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_encoding">
+     <attribute name="title">
+      <string>Encoding</string>
+     </attribute>
+     <widget class="QPlainTextEdit" name="txt_einput">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>501</width>
+        <height>81</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_input">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>62</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Input:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_method">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>120</y>
+        <width>62</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Method:</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="box_method">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>140</y>
+        <width>511</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>ASCII to Base64</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ASCII from Base64</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ASCII to Hexadecimal</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ASCII from Hexadecimal</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ASCII to Decimal</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ASCII from Decimal</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ASCIIto Binary</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ASCII from Binary</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QPlainTextEdit" name="txt_eoutput">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>189</y>
+        <width>491</width>
+        <height>81</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_output_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>170</y>
+        <width>62</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Output:</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_proceed">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>280</y>
+        <width>491</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PROCEED</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_about">
+     <attribute name="title">
+      <string>About</string>
+     </attribute>
+     <widget class="QLabel" name="lbl_img">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>0</y>
+        <width>151</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_appname">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>210</y>
+        <width>251</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Simple String Toolkit by Levis Nickaster</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_license">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>250</y>
+        <width>261</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Using Qt Framework 5 under GPL License</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_stie">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>270</y>
+        <width>311</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;My Personal Blog:&lt;a href=&quot;http://ltops9.wordpress.com&quot;&gt; http://ltops9.wordpress.com&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="txt_version">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>230</y>
+        <width>201</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_ps">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>290</y>
+        <width>301</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>P/s: The image above is my ideal girl, not me :)</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
