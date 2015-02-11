@@ -16,7 +16,7 @@ public:
     QString to_Bin(QString input);
     QString from_Bin(QString input);
     QString ReverseString(QString input);
-
+    QString crc16_Checksum(QString input);
 };
 
 #endif // MAINSTRFUNC_H

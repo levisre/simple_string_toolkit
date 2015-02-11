@@ -46,9 +46,7 @@ void MainWindow::on_btn_Action_clicked()
         {
             case 11://CRC16
             {
-                tmp.append(inputData);
-                quint16 crc = qChecksum(tmp.data(),tmp.length());
-                outputData = QString::number(crc,16);
+                outputData = StrFunc.crc16_Checksum(inputData);
             }
         }
     }

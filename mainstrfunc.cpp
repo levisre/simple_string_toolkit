@@ -108,3 +108,11 @@ QString mainStrFunc::ReverseString(QString input)
     return result;
 }
 
+QString mainStrFunc::crc16_Checksum(QString input)
+{
+    QString result;
+    QByteArray tmp;
+    tmp.append(input);
+    quint16 crc = qChecksum(tmp.data(),tmp.length());
+    return QString::number(crc,16).toUpper();
+}
