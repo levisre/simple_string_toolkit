@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_hashing">
      <attribute name="title">
@@ -254,7 +254,7 @@
       </item>
       <item>
        <property name="text">
-        <string>ASCIIto Binary</string>
+        <string>ASCII to Binary</string>
        </property>
       </item>
       <item>

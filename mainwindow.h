@@ -17,9 +17,6 @@ public:
 
 private slots:
     void on_btn_Action_clicked();
-
-    void on_btn_action_clicked();
-
     void on_btn_proceed_clicked();
 
 private:

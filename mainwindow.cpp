@@ -2,8 +2,8 @@
 #include "ui_mainwindow.h"
 #include "mainstrfunc.h"
 #include <QCryptographicHash>
-//Version String
-QString Version = "0.1 beta";
+
+static QString VERSION_INFO = "0.1 beta";
 mainStrFunc StrFunc;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lbl_img->setPixmap(aboutImage);
     ui->tab_group->setCurrentIndex(0);
     //set Versifon in fabout box
-    ui->txt_version->setText("Version: " + Version);
+    ui->txt_version->setText("Version: " + VERSION_INFO);
 }
 
 MainWindow::~MainWindow()

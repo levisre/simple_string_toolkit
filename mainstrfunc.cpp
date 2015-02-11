@@ -1,6 +1,4 @@
 #include "mainstrfunc.h"
-#include <QCryptographicHash>
-#include <QtCrypto/QtCrypto>
 
 mainStrFunc::mainStrFunc()
 {
@@ -108,11 +106,25 @@ QString mainStrFunc::ReverseString(QString input)
     return result;
 }
 
+//Get CRC16 Checksum
 QString mainStrFunc::crc16_Checksum(QString input)
 {
-    QString result;
+    //QString result;
     QByteArray tmp;
     tmp.append(input);
     quint16 crc = qChecksum(tmp.data(),tmp.length());
     return QString::number(crc,16).toUpper();
+}
+
+QString mainStrFunc::rot13(QString input)
+{
+    int firstUpper =0x41;
+    int lastUpper = 0x4d;
+    int firstLower = 0x61;
+    int lastLower = 0x6d;
+    int rollUper = 0x4e;
+    int rollLower = 0x6e;
+    int zCharUpper = 0x5a;
+    int zCharLower = 0x7a;
+
 }
