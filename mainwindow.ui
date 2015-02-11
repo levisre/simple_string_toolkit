@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_hashing">
      <attribute name="title">
@@ -125,6 +125,11 @@
       <item>
        <property name="text">
         <string>SHA3_512</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>CRC-16</string>
        </property>
       </item>
      </widget>
@@ -257,6 +262,11 @@
         <string>ASCII from Binary</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>Reverse String</string>
+       </property>
+      </item>
      </widget>
      <widget class="QPlainTextEdit" name="txt_eoutput">
       <property name="geometry">
@@ -330,12 +340,12 @@
        <rect>
         <x>20</x>
         <y>250</y>
-        <width>261</width>
+        <width>301</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>Using Qt Framework 5 under GPL License</string>
+       <string>Using Qt Framework 5 under GPLv3 License</string>
       </property>
      </widget>
      <widget class="QLabel" name="lbl_stie">
