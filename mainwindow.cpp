@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //load image to about box
     QPixmap aboutImage(":/M_new.jpg");
     ui->lbl_img->setPixmap(aboutImage);
+    ui->tab_group->setCurrentIndex(0);
     //set Versifon in fabout box
     ui->txt_version->setText("Version: " + Version);
 }
@@ -86,6 +87,52 @@ QString from_Hex(QString input)
     return result;
 }
 
+//Convert from Int o Ascii
+QString from_Int(QString input)
+{
+    QByteArray tmp;
+    tmp.append(input);
+}
+
+//Convert from Ascii to Int
+QString to_Int(QString input)
+{
+    QByteArray tmp;
+    tmp.append(input);
+    QString result;
+    for(int i=0;i<tmp.length();i++)
+    {
+        result += QString::number(tmp[i]);
+    }
+    return result;
+}
+
+
+//Convert Ascii to binary data
+QString to_Bin(QString input)
+{
+    QString result;
+    QByteArray tmp;
+    tmp.append(input);
+    for(int i=0;i<tmp.length();i++)
+    {
+        result += QString::number(tmp[i],2);
+        result += " ";
+    }
+    return result;
+}
+
+//Reverse String
+QString ReverseString(QString input)
+{
+    QString result;
+    for(int i=input.length()-1;i>=0;i--)
+    {
+        result+=input[i];
+    }
+    return result;
+}
+
 
 //code for PROCEED button in Encoding tab
 void MainWindow::on_btn_proceed_clicked()
@@ -112,6 +159,21 @@ void MainWindow::on_btn_proceed_clicked()
         case 3: //Convert from Hex
         {
             outputString = from_Hex(inputString);
+            break;
+        }
+        case 4: //Convert to Int
+        {
+            outputString = to_Int(inputString);
+            break;
+        }
+        case 6: //Convert to Binary
+        {
+            outputString = to_Bin(inputString);
+            break;
+        }
+        case 8: //Reverse String
+        {
+            outputString = ReverseString(inputString);
             break;
         }
     }
