@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_hashing">
      <attribute name="title">
@@ -130,6 +130,51 @@
       <item>
        <property name="text">
         <string>CRC-16</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>CRC32</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ALDER-32</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>RIPEMD128</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>RIPEMD160</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>RIPEMD256</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>RIPEMD320</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Tiger</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Whirlpool</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>MD2</string>
        </property>
       </item>
      </widget>

@@ -1,7 +1,8 @@
 #ifndef MAINSTRFUNC_H
 #define MAINSTRFUNC_H
 #include <QtCore>
-
+#include "Cryptopp/filters.h"
+#include "Cryptopp/hex.h"
 class mainStrFunc
 {
 public:
@@ -18,6 +19,7 @@ public:
     QString ReverseString(QString input);
     QString crc16_Checksum(QString input);
     QString rot13(QString input);
+    QString convertBuffer(byte buffer[]);
 };
 
 #endif // MAINSTRFUNC_H

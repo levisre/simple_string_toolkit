@@ -128,3 +128,13 @@ QString mainStrFunc::rot13(QString input)
     int zCharLower = 0x7a;
 
 }
+
+QString mainStrFunc::convertBuffer(byte buffer[])
+{
+    CryptoPP::HexEncoder hexEncoder;
+    std::string result;
+    hexEncoder.Attach(new CryptoPP::StringSink(result));
+    hexEncoder.Put(buffer,sizeof(buffer));
+    hexEncoder.MessageEnd();
+    return QString::fromStdString(result);
+}

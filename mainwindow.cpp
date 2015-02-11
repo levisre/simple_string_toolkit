@@ -2,9 +2,11 @@
 #include "ui_mainwindow.h"
 #include "mainstrfunc.h"
 #include <QCryptographicHash>
+#include "hashes.h"
 
 static QString VERSION_INFO = "0.1 beta";
 mainStrFunc StrFunc;
+Hashes hash;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -30,15 +32,12 @@ MainWindow::~MainWindow()
 //Code for Calculate hash button in Hashing tab
 void MainWindow::on_btn_Action_clicked()
 {
-    int selectedAlgo = ui->box_Algo->currentIndex();
     QString inputData, outputData;
-    QByteArray tmp;
     inputData = ui->txt_Input->toPlainText();
+    int selectedAlgo = ui->box_Algo->currentIndex();
     if(selectedAlgo<=10)
     {
-        QCryptographicHash objHash((QCryptographicHash::Algorithm)selectedAlgo);
-        objHash.addData(inputData.toLatin1());
-        outputData=objHash.result().toHex().toUpper();
+        outputData=hash.buildinFunc(selectedAlgo,inputData);
     }
     else
     {
@@ -47,6 +46,42 @@ void MainWindow::on_btn_Action_clicked()
             case 11://CRC16
             {
                 outputData = StrFunc.crc16_Checksum(inputData);
+            }
+            case 12: //CRC32
+            {
+                outputData = hash.crc32String(inputData);
+            }
+            case 13: //ALDER32
+            {
+                outputData = hash.alder32String(inputData);
+            }
+            case 14: //RIPEMD128
+            {
+                outputData = hash.Ripemd128(inputData);
+            }
+            case 15: //RIPEMD160
+            {
+                outputData = hash.Ripemd160(inputData);
+            }
+            case 16: //RIPEMD256
+            {
+                outputData = hash.Ripemd256(inputData);
+            }
+            case 17:    //RIPEMD320
+            {
+                outputData = hash.Ripemd320(inputData);
+            }
+            case 18: //Tiger
+            {
+                outputData = hash.Tiger(inputData);
+            }
+            case 19: //Whirlpool
+            {
+                outputData = hash.Whirlpool(inputData);
+            }
+            case 20: //MD2
+            {
+                outputData = hash.MD2String(inputData);
             }
         }
     }
