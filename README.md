@@ -24,6 +24,14 @@ I just learned Qt for less than a week, so this is my very first project i made,
 ==========
 
 Just a hobby project in my free time, these lines are for some lawers if they need it. 
+
 This project uses Lib Crypto++ to manipulate most of the functions.
+
 The Application is licensed under GPLv3 License (read gplv3.txt).
+
 The Crypto++ Library (as a compilation) is currently licensed under the Boost Software License 1.0 (according to the License.txt in Cryptopp Folder)
+
+# Screenshots:
+![About](https://github.com/levisre/simple_string_toolkit/blob/master/img/main_about.jpg)
+![Encoding](https://github.com/levisre/simple_string_toolkit/blob/master/img/main_encoding.jpg)
+![Hashing](https://github.com/levisre/simple_string_toolkit/blob/master/img/main_hashing.jpg)
