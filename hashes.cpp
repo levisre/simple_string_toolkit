@@ -7,6 +7,7 @@ Checkout the Crypto++ at: http://www.cryptopp.com/
 */
 
 #include "hashes.h"
+
 mainStrFunc strFunc;
 Hashes::Hashes()
 {
@@ -25,6 +26,16 @@ QString Hashes::buildinFunc(int index, QString input)
     objHash.addData(input.toLatin1());
     return objHash.result().toHex().toUpper();
 
+}
+
+//Get CRC16 Checksum
+QString Hashes::crc16String(QString input)
+{
+    //QString result;
+    QByteArray tmp;
+    tmp.append(input);
+    quint16 crc = qChecksum(tmp.data(),tmp.length());
+    return QString::number(crc,16).toUpper();
 }
 
 //Calculate CRC32

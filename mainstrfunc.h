@@ -2,7 +2,8 @@
 #define MAINSTRFUNC_H
 #include <QtCore>
 #include "Cryptopp/filters.h"
-#include "Cryptopp/hex.h"
+#include "Cryptopp/base32.h"
+
 class mainStrFunc
 {
 public:
@@ -17,9 +18,10 @@ public:
     QString to_Bin(QString input);
     QString from_Bin(QString input);
     QString ReverseString(QString input);
-    QString crc16_Checksum(QString input);
     QString rot13(QString input);
     QString convertBuffer(char buffer[], int size);
+    QString to_Base32(QString input);
+    QString from_Base32(QString input);
 };
 
 #endif // MAINSTRFUNC_H

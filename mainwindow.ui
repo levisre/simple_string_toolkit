@@ -317,6 +317,16 @@
         <string>ROT13</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>ASCII to Base32</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ASCII from Base32</string>
+       </property>
+      </item>
      </widget>
      <widget class="QPlainTextEdit" name="txt_eoutput">
       <property name="geometry">

@@ -6,12 +6,14 @@ This class contains all the code for mainwindow to work. Created by Qt Creator
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "mainstrfunc.h"
-#include "hashes.h"
 
+//Version String
 static QString VERSION_INFO = "0.1 beta";
+//mainStrFunc object
 mainStrFunc StrFunc;
+//Hashes object
 Hashes hash;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -30,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-
     delete ui;
 }
 
@@ -50,7 +51,7 @@ void MainWindow::on_btn_Action_clicked()
         {
             case 11://CRC16
             {
-                outputData = StrFunc.crc16_Checksum(inputData);
+                outputData = hash.crc16String(inputData);
                 break;
             }
             case 12: //CRC32
@@ -157,6 +158,17 @@ void MainWindow::on_btn_proceed_clicked()
         case 9: //Encode String using Rot13
         {
             outputString = StrFunc.rot13(inputString);
+            break;
+        }
+        case 10://Encode to Base32
+        {
+            outputString = StrFunc.to_Base32(inputString);
+            break;
+        }
+        case 11: //Decode from Base32
+        {
+            outputString = StrFunc.from_Base32(inputString);
+            break;
         }
     }
         //Print text to the Textbox

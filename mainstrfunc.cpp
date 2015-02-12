@@ -113,17 +113,8 @@ QString mainStrFunc::ReverseString(QString input)
     return result;
 }
 
-//Get CRC16 Checksum
-QString mainStrFunc::crc16_Checksum(QString input)
-{
-    //QString result;
-    QByteArray tmp;
-    tmp.append(input);
-    quint16 crc = qChecksum(tmp.data(),tmp.length());
-    return QString::number(crc,16).toUpper();
-}
 
-//Rot13 - Implementing
+//Rot13 Encoding
 QString mainStrFunc::rot13(QString input)
 {
     std::string str = input.toStdString();
@@ -142,6 +133,23 @@ QString mainStrFunc::rot13(QString input)
     return QString::fromStdString(result);
 }
 
+//Convert to Base32
+QString mainStrFunc::to_Base32(QString input)
+{
+    std::string result;
+    std::string stdInput = input.toStdString();
+    CryptoPP::StringSource(stdInput,true,new CryptoPP::Base32Encoder(new CryptoPP::StringSink(result)));
+    return QString::fromStdString(result);
+}
+
+//Convert from Base32
+QString mainStrFunc::from_Base32(QString input)
+{
+    std::string result;
+    std::string stdInput = input.toStdString();
+    CryptoPP::StringSource(stdInput,true,new CryptoPP::Base32Decoder(new CryptoPP::StringSink(result)));
+    return QString::fromStdString(result);
+}
 
 //Convert byte/Char array to Hex-Encoded QString
 QString mainStrFunc::convertBuffer(char buffer[],int size)
@@ -149,3 +157,4 @@ QString mainStrFunc::convertBuffer(char buffer[],int size)
     QByteArray tmp = QByteArray::fromRawData(buffer,size);
     return tmp.toHex().toUpper();
 }
+
