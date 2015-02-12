@@ -7,12 +7,15 @@ This class contains all the code for mainwindow to work. Created by Qt Creator
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-//Version String
-static QString VERSION_INFO = "0.1 beta";
-//mainStrFunc object
+//Something may necessary in Code
+static const QString VERSION_INFO = "0.1 beta";
+static const QString CHAR_STEP_STR = "Character Step: ";
+const QString GIMME_THING = "You must give me some valuable things first!";
 mainStrFunc StrFunc;
-//Hashes object
 Hashes hash;
+//End Declaration
+
+int step = 0;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -174,4 +177,59 @@ void MainWindow::on_btn_proceed_clicked()
         //Print text to the Textbox
         ui->txt_eoutput->clear();
         ui->txt_eoutput->appendPlainText(outputString);
+}
+
+//Code for Decrease Step button
+void MainWindow::on_btn_cDecStep_clicked()
+{
+    if(ui->txt_cInput->toPlainText().length()!=0)
+    {
+        if(step==0)
+        {
+            step = 25;
+        }
+        else
+        {
+            step-=1;
+        }
+        ui->lbl_cStepInfo->setText(CHAR_STEP_STR+ QString::number(step));
+        ui->txt_cOutput->clear();
+        ui->txt_cOutput->appendPlainText(StrFunc.CeasarSolver(ui->txt_cInput->toPlainText(),step));
+    }
+    else
+    {
+        ui->txt_cOutput->appendPlainText(GIMME_THING);
+    }
+}
+
+//Code for Increase Step Button
+void MainWindow::on_pushButton_2_clicked()
+{
+    if(ui->txt_cInput->toPlainText().length()!=0)
+    {
+        if(step>=25)
+        {
+            step = 0;
+        }
+        else
+        {
+            step+=1;
+        }
+        ui->lbl_cStepInfo->setText(CHAR_STEP_STR+ QString::number(step));
+        ui->txt_cOutput->clear();
+        ui->txt_cOutput->appendPlainText(StrFunc.CeasarSolver(ui->txt_cInput->toPlainText(),step));
+    }
+    else
+    {
+        ui->txt_cOutput->appendPlainText(GIMME_THING);
+    }
+}
+
+void MainWindow::on_tab_group_currentChanged(int index)
+{
+    if(index!=2 && ui->txt_cInput->toPlainText().length()==0)
+    {
+        step=0;
+    }
+    ui->lbl_cStepInfo->setText("Character Step: "+QString::number(step));
 }

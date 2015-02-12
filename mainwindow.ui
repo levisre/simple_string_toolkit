@@ -365,10 +365,95 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="tab">
+    <widget class="QWidget" name="tab_ceasar">
      <attribute name="title">
       <string>Ceasar Solver</string>
      </attribute>
+     <widget class="QPushButton" name="btn_cDecStep">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>130</y>
+        <width>201</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Decrease Step</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>130</y>
+        <width>211</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Increase Step</string>
+      </property>
+     </widget>
+     <widget class="QPlainTextEdit" name="txt_cInput">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>501</width>
+        <height>91</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPlainTextEdit" name="txt_cOutput">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>220</y>
+        <width>511</width>
+        <height>91</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_cInput">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>62</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Input:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_cStepInfo">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>320</y>
+        <width>141</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Character Step:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_cOutput">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>180</y>
+        <width>62</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Output:</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_about">
      <attribute name="title">

@@ -22,6 +22,7 @@ public:
     QString convertBuffer(char buffer[], int size);
     QString to_Base32(QString input);
     QString from_Base32(QString input);
+    QString CeasarSolver(QString input, int step);
 };
 
 #endif // MAINSTRFUNC_H
