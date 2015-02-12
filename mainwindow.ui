@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_hashing">
      <attribute name="title">
@@ -364,6 +364,11 @@
        <string>PROCEED</string>
       </property>
      </widget>
+    </widget>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Ceasar Solver</string>
+     </attribute>
     </widget>
     <widget class="QWidget" name="tab_about">
      <attribute name="title">
