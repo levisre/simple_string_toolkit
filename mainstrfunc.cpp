@@ -70,8 +70,17 @@ QString mainStrFunc::from_Hex(QString input)
 //Convert from Int o Ascii
 QString mainStrFunc::from_Int(QString input)
 {
-    QByteArray tmp;
-    tmp.append(input);
+    QString result;
+    try
+    {
+        QByteArray tmp;
+        tmp.append(input);
+    }
+    catch(...)
+    {
+        result = "";
+    }
+    return result;
 }
 
 //Convert from Ascii to Int
