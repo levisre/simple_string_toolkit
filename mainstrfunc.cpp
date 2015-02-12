@@ -1,3 +1,10 @@
+/*
+mainStrFunc.cpp
+This Class contains all the small function which are commonly used to manipulate string
+and they can be used from "Encoding" Tab of the Program's Main Screen
+*/
+
+
 #include "mainstrfunc.h"
 
 mainStrFunc::mainStrFunc()
@@ -116,6 +123,7 @@ QString mainStrFunc::crc16_Checksum(QString input)
     return QString::number(crc,16).toUpper();
 }
 
+//Rot13 - Implementing
 QString mainStrFunc::rot13(QString input)
 {
     int firstUpper =0x41;
@@ -129,6 +137,7 @@ QString mainStrFunc::rot13(QString input)
 
 }
 
+//Convert byte/Char array to Hex-Encoded QString
 QString mainStrFunc::convertBuffer(char buffer[],int size)
 {
     QByteArray tmp = QByteArray::fromRawData(buffer,size);

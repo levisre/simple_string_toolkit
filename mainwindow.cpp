@@ -1,7 +1,12 @@
+/*
+mainwindow.cpp
+This class contains all the code for mainwindow to work. Created by Qt Creator
+*/
+
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "mainstrfunc.h"
-#include <QCryptographicHash>
 #include "hashes.h"
 
 static QString VERSION_INFO = "0.1 beta";

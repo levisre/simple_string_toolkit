@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_hashing">
      <attribute name="title">
@@ -423,13 +423,26 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>290</y>
+        <y>310</y>
         <width>301</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
        <string>P/s: The image above is my ideal girl, not me :)</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbl_srcurl">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>290</y>
+        <width>431</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Checkout the Source code @:&lt;a href=&quot;https://github.com/levisre/simple_string_toolkit&quot;&gt;Github Page&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </widget>
