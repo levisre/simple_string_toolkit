@@ -136,15 +136,27 @@ void MainWindow::on_btn_proceed_clicked()
             outputString = StrFunc.to_Int(inputString);
             break;
         }
+        case 5: //Convert from Int
+        {
+            break;
+        }
         case 6: //Convert to Binary
         {
             outputString = StrFunc.to_Bin(inputString);
+            break;
+        }
+        case 7: //Convert from Binary
+        {
             break;
         }
         case 8: //Reverse String
         {
             outputString = StrFunc.ReverseString(inputString);
             break;
+        }
+        case 9: //Encode String using Rot13
+        {
+            outputString = StrFunc.rot13(inputString);
         }
     }
         //Print text to the Textbox

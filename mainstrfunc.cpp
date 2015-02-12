@@ -126,16 +126,22 @@ QString mainStrFunc::crc16_Checksum(QString input)
 //Rot13 - Implementing
 QString mainStrFunc::rot13(QString input)
 {
-    int firstUpper =0x41;
-    int lastUpper = 0x4d;
-    int firstLower = 0x61;
-    int lastLower = 0x6d;
-    int rollUper = 0x4e;
-    int rollLower = 0x6e;
-    int zCharUpper = 0x5a;
-    int zCharLower = 0x7a;
+    std::string str = input.toStdString();
+    std::string result = str;
 
+    int i=0;
+
+    while (str[i] != '\0')
+    {
+        if (str[i] >= 'a' && str[i] <= 'z')
+            result[i] = (str[i] - 'a' + 13) % 26 + 'a';
+        else if (str[i] >= 'A' && str[i] <= 'Z')
+            result[i] = (str[i] - 'A' + 13) % 26 + 'A';
+        i++;
+    }
+    return QString::fromStdString(result);
 }
+
 
 //Convert byte/Char array to Hex-Encoded QString
 QString mainStrFunc::convertBuffer(char buffer[],int size)
