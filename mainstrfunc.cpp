@@ -129,12 +129,8 @@ QString mainStrFunc::rot13(QString input)
 
 }
 
-QString mainStrFunc::convertBuffer(byte buffer[])
+QString mainStrFunc::convertBuffer(char buffer[],int size)
 {
-    CryptoPP::HexEncoder hexEncoder;
-    std::string result;
-    hexEncoder.Attach(new CryptoPP::StringSink(result));
-    hexEncoder.Put(buffer,sizeof(buffer));
-    hexEncoder.MessageEnd();
-    return QString::fromStdString(result);
+    QByteArray tmp = QByteArray::fromRawData(buffer,size);
+    return tmp.toHex().toUpper();
 }

@@ -19,7 +19,7 @@ public:
     QString ReverseString(QString input);
     QString crc16_Checksum(QString input);
     QString rot13(QString input);
-    QString convertBuffer(byte buffer[]);
+    QString convertBuffer(char buffer[], int size);
 };
 
 #endif // MAINSTRFUNC_H

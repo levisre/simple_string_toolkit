@@ -33,8 +33,8 @@ MainWindow::~MainWindow()
 void MainWindow::on_btn_Action_clicked()
 {
     QString inputData, outputData;
-    inputData = ui->txt_Input->toPlainText();
     int selectedAlgo = ui->box_Algo->currentIndex();
+    inputData = ui->txt_Input->toPlainText();
     if(selectedAlgo<=10)
     {
         outputData=hash.buildinFunc(selectedAlgo,inputData);
@@ -46,42 +46,52 @@ void MainWindow::on_btn_Action_clicked()
             case 11://CRC16
             {
                 outputData = StrFunc.crc16_Checksum(inputData);
+                break;
             }
             case 12: //CRC32
             {
                 outputData = hash.crc32String(inputData);
+                break;
             }
             case 13: //ALDER32
             {
                 outputData = hash.alder32String(inputData);
+                break;
             }
             case 14: //RIPEMD128
             {
                 outputData = hash.Ripemd128(inputData);
+                break;
             }
             case 15: //RIPEMD160
             {
                 outputData = hash.Ripemd160(inputData);
+                break;
             }
             case 16: //RIPEMD256
             {
                 outputData = hash.Ripemd256(inputData);
+                break;
             }
             case 17:    //RIPEMD320
             {
                 outputData = hash.Ripemd320(inputData);
+                break;
             }
             case 18: //Tiger
             {
                 outputData = hash.Tiger(inputData);
+                break;
             }
             case 19: //Whirlpool
             {
                 outputData = hash.Whirlpool(inputData);
+                break;
             }
             case 20: //MD2
             {
                 outputData = hash.MD2String(inputData);
+                break;
             }
         }
     }
