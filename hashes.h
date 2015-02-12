@@ -29,6 +29,6 @@ public:
     QString Whirlpool(QString input);
     QString MD2String(QString input);
     QString buildinFunc(int index, QString input);
-}
+};
 
 #endif // HASHES_H
