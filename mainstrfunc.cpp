@@ -122,26 +122,6 @@ QString mainStrFunc::ReverseString(QString input)
     return result;
 }
 
-
-//Rot13 Encoding
-QString mainStrFunc::rot13(QString input)
-{
-    std::string str = input.toStdString();
-    std::string result = str;
-
-    int i=0;
-
-    while (str[i] != '\0')
-    {
-        if (str[i] >= 'a' && str[i] <= 'z')
-            result[i] = (str[i] - 'a' + 13) % 26 + 'a';
-        else if (str[i] >= 'A' && str[i] <= 'Z')
-            result[i] = (str[i] - 'A' + 13) % 26 + 'A';
-        i++;
-    }
-    return QString::fromStdString(result);
-}
-
 //Convert to Base32
 QString mainStrFunc::to_Base32(QString input)
 {

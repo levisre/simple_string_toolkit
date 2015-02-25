@@ -19,7 +19,7 @@ I just learned Qt for less than a week, so this is my very first project i made,
 >> - Encryption/Decryption using common Cryptographic Algorithms: AES, DES, RSA, ECC, Blowfish, RC4, etc,....
 >> - String Pattern Generator
 >> - Brute-Forcing Ability
->> --- A Simple Ceasar/Vigenere Solver ---
+>> ---A Simple Ceasar/Vigenere Solver---
 >> - ....
 >
 

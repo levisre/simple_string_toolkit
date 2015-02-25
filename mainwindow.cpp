@@ -160,7 +160,7 @@ void MainWindow::on_btn_proceed_clicked()
         }
         case 9: //Encode String using Rot13
         {
-            outputString = StrFunc.rot13(inputString);
+            outputString = StrFunc.CeasarSolver(inputString,13);
             break;
         }
         case 10://Encode to Base32
@@ -225,6 +225,7 @@ void MainWindow::on_pushButton_2_clicked()
     }
 }
 
+//Clear Ceasar Solver Tab's Counter
 void MainWindow::on_tab_group_currentChanged(int index)
 {
     if(index!=2 && ui->txt_cInput->toPlainText().length()==0)

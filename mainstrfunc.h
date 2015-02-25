@@ -18,7 +18,6 @@ public:
     QString to_Bin(QString input);
     QString from_Bin(QString input);
     QString ReverseString(QString input);
-    QString rot13(QString input);
     QString convertBuffer(char buffer[], int size);
     QString to_Base32(QString input);
     QString from_Base32(QString input);
