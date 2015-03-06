@@ -142,7 +142,8 @@ SOURCES += main.cpp\
     Cryptopp/zinflate.cpp \
     Cryptopp/zlib.cpp \
     cryptographic.cpp \
-    hashes.cpp
+    hashes.cpp \
+    morse.cpp
 
 HEADERS  += mainwindow.h \
     mainstrfunc.h \
@@ -282,7 +283,8 @@ HEADERS  += mainwindow.h \
     Cryptopp/zinflate.h \
     Cryptopp/zlib.h \
     cryptographic.h \
-    hashes.h
+    hashes.h \
+    morse.h
 
 FORMS    += mainwindow.ui
 

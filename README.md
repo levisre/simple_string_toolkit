@@ -10,7 +10,7 @@ I just learned Qt for less than a week, so this is my very first project i made,
 >> Implemented some common hashing functions: MD 2/4/5,SHA1,SHA 224/256/384/512,SHA3 224/256/384/512, CRC16/32,ALDER32,WHIRLPOOL512, RIPEMD 128/160/256/320,...
 >
 > ### Encoding:
->> Some Basic String function: Base32/Base64 Encoding/Decoding, ASCII to Hex (Base 16 number), Hex to ASCII, ASCII to Dec (Base 10 Number), Dec to ASCII, ASCII to Binary (Base 2 number), Binary to ASCII, Reverse String....
+>> Some Basic String function: Base32/Base64 Encoding/Decoding, ASCII to Hex (Base 16 number), Hex to ASCII, ASCII to Dec (Base 10 Number), Dec to ASCII, ASCII to Binary (Base 2 number), Binary to ASCII, ASCII to Morse Code, Morse Code to ASCII, Reverse String....
 >
 > ### Ceasar Solver:
 >>Increase Step, Decrease Step to get out the plain text for Ceasar Cipher, or make Ciphered Text
@@ -22,6 +22,18 @@ I just learned Qt for less than a week, so this is my very first project i made,
 >> ---A Simple Ceasar/Vigenere Solver---
 >> - ....
 >
+
+## Requires:
+============
+> - Qt 5.x
+> - C++ Compiler
+
+## How to Compile
+=================
+> - Clone the git repository to your computer
+> - Move to the folder and use "make" command
+> That's all
+
 
 ## License:
 ==========

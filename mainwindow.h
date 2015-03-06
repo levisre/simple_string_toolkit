@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include "mainstrfunc.h"
 #include "hashes.h"
+#include "morse.h"
 
 namespace Ui {
 class MainWindow;

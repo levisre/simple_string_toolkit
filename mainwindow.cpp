@@ -173,6 +173,11 @@ void MainWindow::on_btn_proceed_clicked()
             outputString = StrFunc.from_Base32(inputString);
             break;
         }
+    case 12:
+    {
+        morse myMorse;
+        outputString = myMorse.toMorse(inputString);
+    }
     }
         //Print text to the Textbox
         ui->txt_eoutput->clear();
