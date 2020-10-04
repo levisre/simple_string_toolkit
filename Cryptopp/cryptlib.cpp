@@ -1,6 +1,17 @@
-// cryptlib.cpp - written and placed in the public domain by Wei Dai
+// cryptlib.cpp - originally written and placed in the public domain by Wei Dai
 
 #include "pch.h"
+#include "config.h"
+
+#if CRYPTOPP_MSC_VERSION
+# pragma warning(disable: 4127 4189 4459)
+#endif
+
+#if CRYPTOPP_GCC_DIAGNOSTIC_AVAILABLE
+# pragma GCC diagnostic ignored "-Wunused-value"
+# pragma GCC diagnostic ignored "-Wunused-variable"
+# pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 
 #ifndef CRYPTOPP_IMPORTS
 
@@ -11,10 +22,10 @@
 #include "fips140.h"
 #include "argnames.h"
 #include "fltrimpl.h"
-#include "trdlocal.h"
 #include "osrng.h"
-
-#include <memory>
+#include "secblock.h"
+#include "smartptr.h"
+#include "stdcpp.h"
 
 NAMESPACE_BEGIN(CryptoPP)
 
@@ -25,19 +36,6 @@ CRYPTOPP_COMPILE_ASSERT(sizeof(word64) == 8);
 #ifdef CRYPTOPP_NATIVE_DWORD_AVAILABLE
 CRYPTOPP_COMPILE_ASSERT(sizeof(dword) == 2*sizeof(word));
 #endif
-
-const std::string DEFAULT_CHANNEL;
-const std::string AAD_CHANNEL = "AAD";
-const std::string &BufferedTransformation::NULL_CHANNEL = DEFAULT_CHANNEL;
-
-class NullNameValuePairs : public NameValuePairs
-{
-public:
-	bool GetVoidValue(const char *name, const std::type_info &valueType, void *pValue) const {return false;}
-};
-
-simple_ptr<NullNameValuePairs> s_pNullNameValuePairs(new NullNameValuePairs);
-const NameValuePairs &g_nullNameValuePairs = *s_pNullNameValuePairs.m_p;
 
 BufferedTransformation & TheBitBucket()
 {
@@ -60,7 +58,7 @@ Algorithm::Algorithm(bool checkSelfTestStatus)
 void SimpleKeyingInterface::SetKey(const byte *key, size_t length, const NameValuePairs &params)
 {
 	this->ThrowIfInvalidKeyLength(length);
-	this->UncheckedSetKey(key, (unsigned int)length, params);
+	this->UncheckedSetKey(key, static_cast<unsigned int>(length), params);
 }
 
 void SimpleKeyingInterface::SetKeyWithRounds(const byte *key, size_t length, int rounds)
@@ -91,22 +89,25 @@ void SimpleKeyingInterface::ThrowIfInvalidIV(const byte *iv)
 		throw InvalidArgument(GetAlgorithm().AlgorithmName() + ": this object cannot use a null IV");
 }
 
-size_t SimpleKeyingInterface::ThrowIfInvalidIVLength(int size)
+size_t SimpleKeyingInterface::ThrowIfInvalidIVLength(int length)
 {
-	if (size < 0)
-		return IVSize();
-	else if ((size_t)size < MinIVLength())
-		throw InvalidArgument(GetAlgorithm().AlgorithmName() + ": IV length " + IntToString(size) + " is less than the minimum of " + IntToString(MinIVLength()));
-	else if ((size_t)size > MaxIVLength())
-		throw InvalidArgument(GetAlgorithm().AlgorithmName() + ": IV length " + IntToString(size) + " exceeds the maximum of " + IntToString(MaxIVLength()));
+	size_t size = 0;
+	if (length < 0)
+		size = static_cast<size_t>(IVSize());
+	else if ((size_t)length < MinIVLength())
+		throw InvalidArgument(GetAlgorithm().AlgorithmName() + ": IV length " + IntToString(length) + " is less than the minimum of " + IntToString(MinIVLength()));
+	else if ((size_t)length > MaxIVLength())
+		throw InvalidArgument(GetAlgorithm().AlgorithmName() + ": IV length " + IntToString(length) + " exceeds the maximum of " + IntToString(MaxIVLength()));
 	else
-		return size;
+		size = static_cast<size_t>(length);
+
+	return size;
 }
 
 const byte * SimpleKeyingInterface::GetIVAndThrowIfInvalid(const NameValuePairs &params, size_t &size)
 {
 	ConstByteArrayParameter ivWithLength;
-	const byte *iv;
+	const byte *iv = NULLPTR;
 	bool found = false;
 
 	try {found = params.GetValue(Name::IV(), ivWithLength);}
@@ -116,60 +117,70 @@ const byte * SimpleKeyingInterface::GetIVAndThrowIfInvalid(const NameValuePairs 
 	{
 		iv = ivWithLength.begin();
 		ThrowIfInvalidIV(iv);
-		size = ThrowIfInvalidIVLength((int)ivWithLength.size());
-		return iv;
+		size = ThrowIfInvalidIVLength(static_cast<int>(ivWithLength.size()));
 	}
 	else if (params.GetValue(Name::IV(), iv))
 	{
 		ThrowIfInvalidIV(iv);
-		size = IVSize();
-		return iv;
+		size = static_cast<size_t>(IVSize());
 	}
 	else
 	{
 		ThrowIfResynchronizable();
 		size = 0;
-		return NULL;
 	}
+
+	return iv;
 }
 
-void SimpleKeyingInterface::GetNextIV(RandomNumberGenerator &rng, byte *IV)
+void SimpleKeyingInterface::GetNextIV(RandomNumberGenerator &rng, byte *iv)
 {
-	rng.GenerateBlock(IV, IVSize());
+	rng.GenerateBlock(iv, IVSize());
 }
 
 size_t BlockTransformation::AdvancedProcessBlocks(const byte *inBlocks, const byte *xorBlocks, byte *outBlocks, size_t length, word32 flags) const
 {
-	size_t blockSize = BlockSize();
+	CRYPTOPP_ASSERT(inBlocks);
+	CRYPTOPP_ASSERT(outBlocks);
+	CRYPTOPP_ASSERT(length);
+
+	const unsigned int blockSize = BlockSize();
 	size_t inIncrement = (flags & (BT_InBlockIsCounter|BT_DontIncrementInOutPointers)) ? 0 : blockSize;
 	size_t xorIncrement = xorBlocks ? blockSize : 0;
 	size_t outIncrement = (flags & BT_DontIncrementInOutPointers) ? 0 : blockSize;
 
 	if (flags & BT_ReverseDirection)
 	{
-		assert(length % blockSize == 0);
-		inBlocks += length - blockSize;
-		xorBlocks += length - blockSize;
-		outBlocks += length - blockSize;
+		inBlocks = PtrAdd(inBlocks, length - blockSize);
+		xorBlocks = PtrAdd(xorBlocks, length - blockSize);
+		outBlocks = PtrAdd(outBlocks, length - blockSize);
 		inIncrement = 0-inIncrement;
 		xorIncrement = 0-xorIncrement;
 		outIncrement = 0-outIncrement;
 	}
 
+	// Coverity finding.
+	const bool xorFlag = xorBlocks && (flags & BT_XorInput);
 	while (length >= blockSize)
 	{
-		if (flags & BT_XorInput)
+		if (xorFlag)
 		{
+			// xorBlocks non-NULL and with BT_XorInput.
 			xorbuf(outBlocks, xorBlocks, inBlocks, blockSize);
 			ProcessBlock(outBlocks);
 		}
 		else
+		{
+			// xorBlocks may be non-NULL and without BT_XorInput.
 			ProcessAndXorBlock(inBlocks, xorBlocks, outBlocks);
+		}
+
 		if (flags & BT_InBlockIsCounter)
 			const_cast<byte *>(inBlocks)[blockSize-1]++;
-		inBlocks += inIncrement;
-		outBlocks += outIncrement;
-		xorBlocks += xorIncrement;
+
+		inBlocks = PtrAdd(inBlocks, inIncrement);
+		outBlocks = PtrAdd(outBlocks, outIncrement);
+		xorBlocks = PtrAdd(xorBlocks, xorIncrement);
 		length -= blockSize;
 	}
 
@@ -191,14 +202,32 @@ unsigned int HashTransformation::OptimalDataAlignment() const
 	return GetAlignmentOf<word32>();
 }
 
+#if 0
 void StreamTransformation::ProcessLastBlock(byte *outString, const byte *inString, size_t length)
 {
-	assert(MinLastBlockSize() == 0);	// this function should be overriden otherwise
+	CRYPTOPP_ASSERT(MinLastBlockSize() == 0);	// this function should be overridden otherwise
 
 	if (length == MandatoryBlockSize())
 		ProcessData(outString, inString, length);
 	else if (length != 0)
-		throw NotImplemented(AlgorithmName() + ": this object does't support a special last block");
+		throw NotImplemented(AlgorithmName() + ": this object doesn't support a special last block");
+}
+#endif
+
+size_t StreamTransformation::ProcessLastBlock(byte *outString, size_t outLength, const byte *inString, size_t inLength)
+{
+	// this function should be overridden otherwise
+	CRYPTOPP_ASSERT(MinLastBlockSize() == 0);
+
+	if (inLength == MandatoryBlockSize())
+	{
+		outLength = inLength; // squash unused warning
+		ProcessData(outString, inString, inLength);
+	}
+	else if (inLength != 0)
+		throw NotImplemented(AlgorithmName() + ": this object doesn't support a special last block");
+
+	return outLength;
 }
 
 void AuthenticatedSymmetricCipher::SpecifyDataLengths(lword headerLength, lword messageLength, lword footerLength)
@@ -208,7 +237,7 @@ void AuthenticatedSymmetricCipher::SpecifyDataLengths(lword headerLength, lword 
 
 	if (messageLength > MaxMessageLength())
 		throw InvalidArgument(GetAlgorithm().AlgorithmName() + ": message length " + IntToString(messageLength) + " exceeds the maximum of " + IntToString(MaxMessageLength()));
-		
+
 	if (footerLength > MaxFooterLength())
 		throw InvalidArgument(GetAlgorithm().AlgorithmName() + ": footer length " + IntToString(footerLength) + " exceeds the maximum of " + IntToString(MaxFooterLength()));
 
@@ -233,6 +262,12 @@ bool AuthenticatedSymmetricCipher::DecryptAndVerify(byte *message, const byte *m
 	return TruncatedVerify(mac, macLength);
 }
 
+std::string AuthenticatedSymmetricCipher::AlgorithmName() const
+{
+	// Squash C4505 on Visual Studio 2008 and friends
+	return "Unknown";
+}
+
 unsigned int RandomNumberGenerator::GenerateBit()
 {
 	return GenerateByte() & 1;
@@ -247,8 +282,8 @@ byte RandomNumberGenerator::GenerateByte()
 
 word32 RandomNumberGenerator::GenerateWord32(word32 min, word32 max)
 {
-	word32 range = max-min;
-	const int maxBits = BitPrecision(range);
+	const word32 range = max-min;
+	const unsigned int maxBits = BitPrecision(range);
 
 	word32 value;
 
@@ -261,8 +296,22 @@ word32 RandomNumberGenerator::GenerateWord32(word32 min, word32 max)
 	return value+min;
 }
 
+// Stack recursion below... GenerateIntoBufferedTransformation calls GenerateBlock,
+// and GenerateBlock calls GenerateIntoBufferedTransformation. Ad infinitum. Also
+// see http://github.com/weidai11/cryptopp/issues/38.
+//
+// According to Wei, RandomNumberGenerator is an interface, and it should not
+// be instantiable. Its now spilt milk, and we are going to CRYPTOPP_ASSERT it in Debug
+// builds to alert the programmer and throw in Release builds. Developers have
+// a reference implementation in case its needed. If a programmer
+// unintentionally lands here, then they should ensure use of a
+// RandomNumberGenerator pointer or reference so polymorphism can provide the
+// proper runtime dispatching.
+
 void RandomNumberGenerator::GenerateBlock(byte *output, size_t size)
 {
+	CRYPTOPP_UNUSED(output), CRYPTOPP_UNUSED(size);
+
 	ArraySink s(output, size);
 	GenerateIntoBufferedTransformation(s, DEFAULT_CHANNEL, size);
 }
@@ -279,17 +328,73 @@ void RandomNumberGenerator::GenerateIntoBufferedTransformation(BufferedTransform
 	{
 		size_t len = UnsignedMin(buffer.size(), length);
 		GenerateBlock(buffer, len);
-		target.ChannelPut(channel, buffer, len);
+		(void)target.ChannelPut(channel, buffer, len);
 		length -= len;
 	}
 }
 
-//! see NullRNG()
+size_t KeyDerivationFunction::MinDerivedLength() const
+{
+	return 0;
+}
+
+size_t KeyDerivationFunction::MaxDerivedLength() const
+{
+	return static_cast<size_t>(-1);
+}
+
+void KeyDerivationFunction::ThrowIfInvalidDerivedLength(size_t length) const
+{
+	if (!IsValidDerivedLength(length))
+		throw InvalidDerivedLength(GetAlgorithm().AlgorithmName(), length);
+}
+
+void KeyDerivationFunction::SetParameters(const NameValuePairs& params) {
+	CRYPTOPP_UNUSED(params);
+}
+
+/// \brief Random Number Generator that does not produce random numbers
+/// \details ClassNullRNG can be used for functions that require a RandomNumberGenerator
+///   but don't actually use it. The class throws NotImplemented when a generation function is called.
+/// \sa NullRNG()
 class ClassNullRNG : public RandomNumberGenerator
 {
 public:
+	/// \brief The name of the generator
+	/// \returns the string \a NullRNGs
 	std::string AlgorithmName() const {return "NullRNG";}
-	void GenerateBlock(byte *output, size_t size) {throw NotImplemented("NullRNG: NullRNG should only be passed to functions that don't need to generate random bytes");}
+
+#if defined(CRYPTOPP_DOXYGEN_PROCESSING)
+	/// \brief An implementation that throws NotImplemented
+	byte GenerateByte () {}
+	/// \brief An implementation that throws NotImplemented
+	unsigned int GenerateBit () {}
+	/// \brief An implementation that throws NotImplemented
+	word32 GenerateWord32 (word32 min, word32 max) {}
+#endif
+
+	/// \brief An implementation that throws NotImplemented
+	void GenerateBlock(byte *output, size_t size)
+	{
+		CRYPTOPP_UNUSED(output); CRYPTOPP_UNUSED(size);
+		throw NotImplemented("NullRNG: NullRNG should only be passed to functions that don't need to generate random bytes");
+	}
+
+#if defined(CRYPTOPP_DOXYGEN_PROCESSING)
+	/// \brief An implementation that throws NotImplemented
+	void GenerateIntoBufferedTransformation (BufferedTransformation &target, const std::string &channel, lword length) {}
+	/// \brief An implementation that throws NotImplemented
+	void IncorporateEntropy (const byte *input, size_t length) {}
+	/// \brief An implementation that returns \p false
+	bool CanIncorporateEntropy () const {}
+	/// \brief An implementation that does nothing
+	void DiscardBytes (size_t n) {}
+	/// \brief An implementation that does nothing
+	void Shuffle (IT begin, IT end) {}
+
+private:
+	Clonable* Clone () const { return NULLPTR; }
+#endif
 };
 
 RandomNumberGenerator & NullRNG()
@@ -298,12 +403,12 @@ RandomNumberGenerator & NullRNG()
 	return s_nullRNG;
 }
 
-bool HashTransformation::TruncatedVerify(const byte *digestIn, size_t digestLength)
+bool HashTransformation::TruncatedVerify(const byte *digest, size_t digestLength)
 {
 	ThrowIfInvalidTruncatedSize(digestLength);
-	SecByteBlock digest(digestLength);
-	TruncatedFinal(digest, digestLength);
-	return VerifyBufsEqual(digest, digestIn, digestLength);
+	SecByteBlock calculated(digestLength);
+	TruncatedFinal(calculated, digestLength);
+	return VerifyBufsEqual(calculated, digest, digestLength);
 }
 
 void HashTransformation::ThrowIfInvalidTruncatedSize(size_t size) const
@@ -327,168 +432,204 @@ void BufferedTransformation::GetWaitObjects(WaitObjectContainer &container, Call
 
 void BufferedTransformation::Initialize(const NameValuePairs &parameters, int propagation)
 {
-	assert(!AttachedTransformation());
+	CRYPTOPP_UNUSED(propagation);
+	CRYPTOPP_ASSERT(!AttachedTransformation());
 	IsolatedInitialize(parameters);
 }
 
 bool BufferedTransformation::Flush(bool hardFlush, int propagation, bool blocking)
 {
-	assert(!AttachedTransformation());
+	CRYPTOPP_UNUSED(propagation);
+	CRYPTOPP_ASSERT(!AttachedTransformation());
 	return IsolatedFlush(hardFlush, blocking);
 }
 
 bool BufferedTransformation::MessageSeriesEnd(int propagation, bool blocking)
 {
-	assert(!AttachedTransformation());
+	CRYPTOPP_UNUSED(propagation);
+	CRYPTOPP_ASSERT(!AttachedTransformation());
 	return IsolatedMessageSeriesEnd(blocking);
 }
 
 byte * BufferedTransformation::ChannelCreatePutSpace(const std::string &channel, size_t &size)
 {
+	byte* space = NULLPTR;
 	if (channel.empty())
-		return CreatePutSpace(size);
+		space = CreatePutSpace(size);
 	else
 		throw NoChannelSupport(AlgorithmName());
+	return space;
 }
 
-size_t BufferedTransformation::ChannelPut2(const std::string &channel, const byte *begin, size_t length, int messageEnd, bool blocking)
+size_t BufferedTransformation::ChannelPut2(const std::string &channel, const byte *inString, size_t length, int messageEnd, bool blocking)
 {
+	size_t size = 0;
 	if (channel.empty())
-		return Put2(begin, length, messageEnd, blocking);
+		size = Put2(inString, length, messageEnd, blocking);
 	else
 		throw NoChannelSupport(AlgorithmName());
+	return size;
 }
 
-size_t BufferedTransformation::ChannelPutModifiable2(const std::string &channel, byte *begin, size_t length, int messageEnd, bool blocking)
+size_t BufferedTransformation::ChannelPutModifiable2(const std::string &channel, byte *inString, size_t length, int messageEnd, bool blocking)
 {
+	size_t size = 0;
 	if (channel.empty())
-		return PutModifiable2(begin, length, messageEnd, blocking);
+		size = PutModifiable2(inString, length, messageEnd, blocking);
 	else
-		return ChannelPut2(channel, begin, length, messageEnd, blocking);
+		size = ChannelPut2(channel, inString, length, messageEnd, blocking);
+	return size;
 }
 
-bool BufferedTransformation::ChannelFlush(const std::string &channel, bool completeFlush, int propagation, bool blocking)
+bool BufferedTransformation::ChannelFlush(const std::string &channel, bool hardFlush, int propagation, bool blocking)
 {
+	bool result = 0;
 	if (channel.empty())
-		return Flush(completeFlush, propagation, blocking);
+		result = Flush(hardFlush, propagation, blocking);
 	else
 		throw NoChannelSupport(AlgorithmName());
+	return result;
 }
 
 bool BufferedTransformation::ChannelMessageSeriesEnd(const std::string &channel, int propagation, bool blocking)
 {
+	bool result = false;
 	if (channel.empty())
-		return MessageSeriesEnd(propagation, blocking);
+		result = MessageSeriesEnd(propagation, blocking);
 	else
 		throw NoChannelSupport(AlgorithmName());
+	return result;
 }
 
 lword BufferedTransformation::MaxRetrievable() const
 {
+	lword size = 0;
 	if (AttachedTransformation())
-		return AttachedTransformation()->MaxRetrievable();
+		size = AttachedTransformation()->MaxRetrievable();
 	else
-		return CopyTo(TheBitBucket());
+		size = CopyTo(TheBitBucket());
+	return size;
 }
 
 bool BufferedTransformation::AnyRetrievable() const
 {
+	bool result = false;
 	if (AttachedTransformation())
-		return AttachedTransformation()->AnyRetrievable();
+		result = AttachedTransformation()->AnyRetrievable();
 	else
 	{
 		byte b;
-		return Peek(b) != 0;
+		result = Peek(b) != 0;
 	}
+	return result;
 }
 
 size_t BufferedTransformation::Get(byte &outByte)
 {
+	size_t size = 0;
 	if (AttachedTransformation())
-		return AttachedTransformation()->Get(outByte);
+		size = AttachedTransformation()->Get(outByte);
 	else
-		return Get(&outByte, 1);
+		size = Get(&outByte, 1);
+	return size;
 }
 
 size_t BufferedTransformation::Get(byte *outString, size_t getMax)
 {
+	size_t size = 0;
 	if (AttachedTransformation())
-		return AttachedTransformation()->Get(outString, getMax);
+		size = AttachedTransformation()->Get(outString, getMax);
 	else
 	{
 		ArraySink arraySink(outString, getMax);
-		return (size_t)TransferTo(arraySink, getMax);
+		size = (size_t)TransferTo(arraySink, getMax);
 	}
+	return size;
 }
 
 size_t BufferedTransformation::Peek(byte &outByte) const
 {
+	size_t size = 0;
 	if (AttachedTransformation())
-		return AttachedTransformation()->Peek(outByte);
+		size = AttachedTransformation()->Peek(outByte);
 	else
-		return Peek(&outByte, 1);
+		size = Peek(&outByte, 1);
+	return size;
 }
 
 size_t BufferedTransformation::Peek(byte *outString, size_t peekMax) const
 {
+	size_t size = 0;
 	if (AttachedTransformation())
-		return AttachedTransformation()->Peek(outString, peekMax);
+		size = AttachedTransformation()->Peek(outString, peekMax);
 	else
 	{
 		ArraySink arraySink(outString, peekMax);
-		return (size_t)CopyTo(arraySink, peekMax);
+		size = (size_t)CopyTo(arraySink, peekMax);
 	}
+	return size;
 }
 
 lword BufferedTransformation::Skip(lword skipMax)
 {
+	lword size = 0;
 	if (AttachedTransformation())
-		return AttachedTransformation()->Skip(skipMax);
+		size = AttachedTransformation()->Skip(skipMax);
 	else
-		return TransferTo(TheBitBucket(), skipMax);
+		size = TransferTo(TheBitBucket(), skipMax);
+	return size;
 }
 
 lword BufferedTransformation::TotalBytesRetrievable() const
 {
+	lword size = 0;
 	if (AttachedTransformation())
-		return AttachedTransformation()->TotalBytesRetrievable();
+		size = AttachedTransformation()->TotalBytesRetrievable();
 	else
-		return MaxRetrievable();
+		size = MaxRetrievable();
+	return size;
 }
 
 unsigned int BufferedTransformation::NumberOfMessages() const
 {
+	unsigned int size = 0;
 	if (AttachedTransformation())
-		return AttachedTransformation()->NumberOfMessages();
+		size = AttachedTransformation()->NumberOfMessages();
 	else
-		return CopyMessagesTo(TheBitBucket());
+		size = CopyMessagesTo(TheBitBucket());
+	return size;
 }
 
 bool BufferedTransformation::AnyMessages() const
 {
+	bool result = false;
 	if (AttachedTransformation())
-		return AttachedTransformation()->AnyMessages();
+		result = AttachedTransformation()->AnyMessages();
 	else
-		return NumberOfMessages() != 0;
+		result = NumberOfMessages() != 0;
+	return result;
 }
 
 bool BufferedTransformation::GetNextMessage()
 {
+	bool result = false;
 	if (AttachedTransformation())
-		return AttachedTransformation()->GetNextMessage();
+		result = AttachedTransformation()->GetNextMessage();
 	else
 	{
-		assert(!AnyMessages());
-		return false;
+		CRYPTOPP_ASSERT(!AnyMessages());
 	}
+	return result;
 }
 
 unsigned int BufferedTransformation::SkipMessages(unsigned int count)
 {
+	unsigned int size = 0;
 	if (AttachedTransformation())
-		return AttachedTransformation()->SkipMessages(count);
+		size = AttachedTransformation()->SkipMessages(count);
 	else
-		return TransferMessagesTo(TheBitBucket(), count);
+		size = TransferMessagesTo(TheBitBucket(), count);
+	return size;
 }
 
 size_t BufferedTransformation::TransferMessagesTo2(BufferedTransformation &target, unsigned int &messageCount, const std::string &channel, bool blocking)
@@ -515,7 +656,7 @@ size_t BufferedTransformation::TransferMessagesTo2(BufferedTransformation &targe
 				return 1;
 
 			bool result = GetNextMessage();
-			assert(result);
+			CRYPTOPP_UNUSED(result); CRYPTOPP_ASSERT(result);
 		}
 		return 0;
 	}
@@ -523,10 +664,10 @@ size_t BufferedTransformation::TransferMessagesTo2(BufferedTransformation &targe
 
 unsigned int BufferedTransformation::CopyMessagesTo(BufferedTransformation &target, unsigned int count, const std::string &channel) const
 {
+	unsigned int size = 0;
 	if (AttachedTransformation())
-		return AttachedTransformation()->CopyMessagesTo(target, count, channel);
-	else
-		return 0;
+		size = AttachedTransformation()->CopyMessagesTo(target, count, channel);
+	return size;
 }
 
 void BufferedTransformation::SkipAll()
@@ -546,7 +687,7 @@ size_t BufferedTransformation::TransferAllTo2(BufferedTransformation &target, co
 		return AttachedTransformation()->TransferAllTo2(target, channel, blocking);
 	else
 	{
-		assert(!NumberOfMessageSeries());
+		CRYPTOPP_ASSERT(!NumberOfMessageSeries());
 
 		unsigned int messageCount;
 		do
@@ -578,7 +719,7 @@ void BufferedTransformation::CopyAllTo(BufferedTransformation &target, const std
 		AttachedTransformation()->CopyAllTo(target, channel);
 	else
 	{
-		assert(!NumberOfMessageSeries());
+		CRYPTOPP_ASSERT(!NumberOfMessageSeries());
 		while (CopyMessagesTo(target, UINT_MAX, channel)) {}
 	}
 }
@@ -611,6 +752,13 @@ size_t BufferedTransformation::PutWord32(word32 value, ByteOrder order, bool blo
 	return ChannelPutWord32(DEFAULT_CHANNEL, value, order, blocking);
 }
 
+// Issue 340
+#if CRYPTOPP_GCC_DIAGNOSTIC_AVAILABLE
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wconversion"
+# pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
+
 size_t BufferedTransformation::PeekWord16(word16 &value, ByteOrder order) const
 {
 	byte buf[2] = {0, 0};
@@ -637,6 +785,11 @@ size_t BufferedTransformation::PeekWord32(word32 &value, ByteOrder order) const
 	return len;
 }
 
+// Issue 340
+#if CRYPTOPP_GCC_DIAGNOSTIC_AVAILABLE
+# pragma GCC diagnostic pop
+#endif
+
 size_t BufferedTransformation::GetWord16(word16 &value, ByteOrder order)
 {
 	return (size_t)Skip(PeekWord16(value, order));
@@ -647,12 +800,12 @@ size_t BufferedTransformation::GetWord32(word32 &value, ByteOrder order)
 	return (size_t)Skip(PeekWord32(value, order));
 }
 
-void BufferedTransformation::Attach(BufferedTransformation *newOut)
+void BufferedTransformation::Attach(BufferedTransformation *newAttachment)
 {
 	if (AttachedTransformation() && AttachedTransformation()->Attachable())
-		AttachedTransformation()->Attach(newOut);
+		AttachedTransformation()->Attach(newAttachment);
 	else
-		Detach(newOut);
+		Detach(newAttachment);
 }
 
 void GeneratableCryptoMaterial::GenerateRandomWithKeySize(RandomNumberGenerator &rng, unsigned int keySize)
@@ -687,7 +840,7 @@ public:
 			m_ciphertext.resize(ciphertextLength);
 			m_encryptor.Encrypt(m_rng, plaintext, plaintextLength, m_ciphertext, m_parameters);
 			}
-			
+
 			FILTER_OUTPUT(1, m_ciphertext, m_ciphertext.size(), messageEnd);
 		}
 		FILTER_END_NO_MESSAGE_END;
@@ -755,21 +908,21 @@ BufferedTransformation * PK_Decryptor::CreateDecryptionFilter(RandomNumberGenera
 
 size_t PK_Signer::Sign(RandomNumberGenerator &rng, PK_MessageAccumulator *messageAccumulator, byte *signature) const
 {
-	std::auto_ptr<PK_MessageAccumulator> m(messageAccumulator);
+	member_ptr<PK_MessageAccumulator> m(messageAccumulator);
 	return SignAndRestart(rng, *m, signature, false);
 }
 
 size_t PK_Signer::SignMessage(RandomNumberGenerator &rng, const byte *message, size_t messageLen, byte *signature) const
 {
-	std::auto_ptr<PK_MessageAccumulator> m(NewSignatureAccumulator(rng));
+	member_ptr<PK_MessageAccumulator> m(NewSignatureAccumulator(rng));
 	m->Update(message, messageLen);
 	return SignAndRestart(rng, *m, signature, false);
 }
 
-size_t PK_Signer::SignMessageWithRecovery(RandomNumberGenerator &rng, const byte *recoverableMessage, size_t recoverableMessageLength, 
+size_t PK_Signer::SignMessageWithRecovery(RandomNumberGenerator &rng, const byte *recoverableMessage, size_t recoverableMessageLength,
 	const byte *nonrecoverableMessage, size_t nonrecoverableMessageLength, byte *signature) const
 {
-	std::auto_ptr<PK_MessageAccumulator> m(NewSignatureAccumulator(rng));
+	member_ptr<PK_MessageAccumulator> m(NewSignatureAccumulator(rng));
 	InputRecoverableMessage(*m, recoverableMessage, recoverableMessageLength);
 	m->Update(nonrecoverableMessage, nonrecoverableMessageLength);
 	return SignAndRestart(rng, *m, signature, false);
@@ -777,29 +930,29 @@ size_t PK_Signer::SignMessageWithRecovery(RandomNumberGenerator &rng, const byte
 
 bool PK_Verifier::Verify(PK_MessageAccumulator *messageAccumulator) const
 {
-	std::auto_ptr<PK_MessageAccumulator> m(messageAccumulator);
+	member_ptr<PK_MessageAccumulator> m(messageAccumulator);
 	return VerifyAndRestart(*m);
 }
 
-bool PK_Verifier::VerifyMessage(const byte *message, size_t messageLen, const byte *signature, size_t signatureLength) const
+bool PK_Verifier::VerifyMessage(const byte *message, size_t messageLen, const byte *signature, size_t signatureLen) const
 {
-	std::auto_ptr<PK_MessageAccumulator> m(NewVerificationAccumulator());
-	InputSignature(*m, signature, signatureLength);
+	member_ptr<PK_MessageAccumulator> m(NewVerificationAccumulator());
+	InputSignature(*m, signature, signatureLen);
 	m->Update(message, messageLen);
 	return VerifyAndRestart(*m);
 }
 
 DecodingResult PK_Verifier::Recover(byte *recoveredMessage, PK_MessageAccumulator *messageAccumulator) const
 {
-	std::auto_ptr<PK_MessageAccumulator> m(messageAccumulator);
+	member_ptr<PK_MessageAccumulator> m(messageAccumulator);
 	return RecoverAndRestart(recoveredMessage, *m);
 }
 
-DecodingResult PK_Verifier::RecoverMessage(byte *recoveredMessage, 
-	const byte *nonrecoverableMessage, size_t nonrecoverableMessageLength, 
+DecodingResult PK_Verifier::RecoverMessage(byte *recoveredMessage,
+	const byte *nonrecoverableMessage, size_t nonrecoverableMessageLength,
 	const byte *signature, size_t signatureLength) const
 {
-	std::auto_ptr<PK_MessageAccumulator> m(NewVerificationAccumulator());
+	member_ptr<PK_MessageAccumulator> m(NewVerificationAccumulator());
 	InputSignature(*m, signature, signatureLength);
 	m->Update(nonrecoverableMessage, nonrecoverableMessageLength);
 	return RecoverAndRestart(recoveredMessage, *m);
@@ -823,6 +976,50 @@ void AuthenticatedKeyAgreementDomain::GenerateEphemeralKeyPair(RandomNumberGener
 	GenerateEphemeralPublicKey(rng, privateKey, publicKey);
 }
 
-NAMESPACE_END
-
+// Allow a distro or packager to override the build-time version
+//  http://github.com/weidai11/cryptopp/issues/371
+#ifndef CRYPTOPP_BUILD_VERSION
+# define CRYPTOPP_BUILD_VERSION CRYPTOPP_VERSION
 #endif
+int LibraryVersion(CRYPTOPP_NOINLINE_DOTDOTDOT)
+{
+	return CRYPTOPP_BUILD_VERSION;
+}
+
+class NullNameValuePairs : public NameValuePairs
+{
+public:
+	NullNameValuePairs() {}    //  Clang complains a default ctor must be avilable
+	bool GetVoidValue(const char *name, const std::type_info &valueType, void *pValue) const
+		{CRYPTOPP_UNUSED(name); CRYPTOPP_UNUSED(valueType); CRYPTOPP_UNUSED(pValue); return false;}
+};
+
+#if HAVE_GCC_INIT_PRIORITY
+  const std::string DEFAULT_CHANNEL __attribute__ ((init_priority (CRYPTOPP_INIT_PRIORITY + 25))) = "";
+  const std::string AAD_CHANNEL __attribute__ ((init_priority (CRYPTOPP_INIT_PRIORITY + 26))) = "AAD";
+  const NullNameValuePairs s_nullNameValuePairs __attribute__ ((init_priority (CRYPTOPP_INIT_PRIORITY + 27)));
+  const NameValuePairs& g_nullNameValuePairs = s_nullNameValuePairs;
+#elif HAVE_MSC_INIT_PRIORITY
+  #pragma warning(disable: 4073)
+  #pragma init_seg(lib)
+  const std::string DEFAULT_CHANNEL = "";
+  const std::string AAD_CHANNEL = "AAD";
+  const NullNameValuePairs s_nullNameValuePairs;
+  const NameValuePairs& g_nullNameValuePairs = s_nullNameValuePairs;
+  #pragma warning(default: 4073)
+#elif HAVE_XLC_INIT_PRIORITY
+  #pragma priority(260)
+  const std::string DEFAULT_CHANNEL = "";
+  const std::string AAD_CHANNEL = "AAD";
+  const NullNameValuePairs s_nullNameValuePairs;
+  const NameValuePairs& g_nullNameValuePairs = s_nullNameValuePairs;
+#else
+  const std::string DEFAULT_CHANNEL = "";
+  const std::string AAD_CHANNEL = "AAD";
+  const simple_ptr<NullNameValuePairs> s_pNullNameValuePairs(new NullNameValuePairs);
+  const NameValuePairs &g_nullNameValuePairs = *s_pNullNameValuePairs.m_p;
+#endif
+
+NAMESPACE_END  // CryptoPP
+
+#endif  // CRYPTOPP_IMPORTS
