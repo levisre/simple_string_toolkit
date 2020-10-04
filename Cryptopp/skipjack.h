@@ -1,23 +1,38 @@
+// skipjack.h - originally written and placed in the public domain by Wei Dai
+
+/// \file skipjack.h
+/// \brief Classes for the SKIPJACK block cipher
+/// \details The Crypto++ implementation conforms to SKIPJACK and KEA
+///  Algorithm Specifications published by NIST in May 1998. The library passes
+///  known answer tests available in NIST SP800-17, Table 6, pp. 140-42.
+/// \sa <a href ="http://csrc.nist.gov/encryption/skipjack/skipjack.pdf">SKIPJACK
+///  and KEA Algorithm Specifications</a> (May 1998), <a
+///  href="http://www.cryptopp.com/wiki/SKIPJACK">SKIPJACK</a> on the Crypto++ wiki
+
 #ifndef CRYPTOPP_SKIPJACK_H
 #define CRYPTOPP_SKIPJACK_H
-
-/** \file
-*/
 
 #include "seckey.h"
 #include "secblock.h"
 
 NAMESPACE_BEGIN(CryptoPP)
 
-//! _
+/// \brief SKIPJACK block cipher information
 struct SKIPJACK_Info : public FixedBlockSize<8>, public FixedKeyLength<10>
 {
 	CRYPTOPP_DLL static const char * CRYPTOPP_API StaticAlgorithmName() {return "SKIPJACK";}
 };
 
-/// <a href="http://www.weidai.com/scan-mirror/cs.html#SKIPJACK">SKIPJACK</a>
+/// \brief SKIPJACK block cipher
+/// \details The Crypto++ implementation conforms to SKIPJACK and KEA
+///  Algorithm Specifications published by NIST in May 1998. The library passes
+///  known answer tests available in NIST SP800-17, Table 6, pp. 140-42.
+/// \sa <a href ="http://csrc.nist.gov/encryption/skipjack/skipjack.pdf">SKIPJACK
+///  and KEA Algorithm Specifications</a> (May 1998), <a
+///  href="http://www.cryptopp.com/wiki/SKIPJACK">SKIPJACK</a> on the Crypto++ wiki
 class SKIPJACK : public SKIPJACK_Info, public BlockCipherDocumentation
 {
+	/// \brief SKIPJACK block cipher default operation
 	class CRYPTOPP_DLL CRYPTOPP_NO_VTABLE Base : public BlockCipherImpl<SKIPJACK_Info>
 	{
 	public:
@@ -30,6 +45,7 @@ class SKIPJACK : public SKIPJACK_Info, public BlockCipherDocumentation
 		FixedSizeSecBlock<byte, 10*256> tab;
 	};
 
+	/// \brief SKIPJACK block cipher encryption operation
 	class CRYPTOPP_DLL CRYPTOPP_NO_VTABLE Enc : public Base
 	{
 	public:
@@ -39,6 +55,7 @@ class SKIPJACK : public SKIPJACK_Info, public BlockCipherDocumentation
 		static const word32 Te[4][256];
 	};
 
+	/// \brief SKIPJACK block cipher decryption operation
 	class CRYPTOPP_DLL CRYPTOPP_NO_VTABLE Dec : public Base
 	{
 	public:

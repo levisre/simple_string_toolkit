@@ -1,22 +1,18 @@
-// fips140.cpp - written and placed in the public domain by Wei Dai
+// fips140.cpp - originally written and placed in the public domain by Wei Dai
 
 #include "pch.h"
 
 #ifndef CRYPTOPP_IMPORTS
 
 #include "fips140.h"
-#include "trdlocal.h"	// needs to be included last for cygwin
+#include "misc.h"
 
 NAMESPACE_BEGIN(CryptoPP)
 
-// Define this to 1 to turn on FIPS 140-2 compliance features, including additional tests during 
+// Define this to 1 to turn on FIPS 140-2 compliance features, including additional tests during
 // startup, random number generation, and key generation. These tests may affect performance.
 #ifndef CRYPTOPP_ENABLE_COMPLIANCE_WITH_FIPS_140_2
 #define CRYPTOPP_ENABLE_COMPLIANCE_WITH_FIPS_140_2 0
-#endif
-
-#if (CRYPTOPP_ENABLE_COMPLIANCE_WITH_FIPS_140_2 && !defined(THREADS_AVAILABLE))
-#error FIPS 140-2 compliance requires the availability of thread local storage.
 #endif
 
 #if (CRYPTOPP_ENABLE_COMPLIANCE_WITH_FIPS_140_2 && !defined(OS_RNG_AVAILABLE))
@@ -41,32 +37,31 @@ PowerUpSelfTestStatus CRYPTOPP_API GetPowerUpSelfTestStatus()
 }
 
 #if CRYPTOPP_ENABLE_COMPLIANCE_WITH_FIPS_140_2
-ThreadLocalStorage & AccessPowerUpSelfTestInProgress()
-{
-	static ThreadLocalStorage selfTestInProgress;
-	return selfTestInProgress;
-}
+// One variable for all threads for compatibility. Previously this
+// was a ThreadLocalStorage variable, which is per-thread. Also see
+// https://github.com/weidai11/cryptopp/issues/208
+static bool s_inProgress = false;
 #endif
 
 bool PowerUpSelfTestInProgressOnThisThread()
 {
 #if CRYPTOPP_ENABLE_COMPLIANCE_WITH_FIPS_140_2
-	return AccessPowerUpSelfTestInProgress().GetValue() != NULL;
-#else
-	assert(false);	// should not be called
-	return false;
+	return s_inProgress;
 #endif
+	return false;
 }
 
 void SetPowerUpSelfTestInProgressOnThisThread(bool inProgress)
 {
+	CRYPTOPP_UNUSED(inProgress);
 #if CRYPTOPP_ENABLE_COMPLIANCE_WITH_FIPS_140_2
-	AccessPowerUpSelfTestInProgress().SetValue((void *)inProgress);
+	s_inProgress = inProgress;
 #endif
 }
 
 void EncryptionPairwiseConsistencyTest_FIPS_140_Only(const PK_Encryptor &encryptor, const PK_Decryptor &decryptor)
 {
+	CRYPTOPP_UNUSED(encryptor), CRYPTOPP_UNUSED(decryptor);
 #if CRYPTOPP_ENABLE_COMPLIANCE_WITH_FIPS_140_2
 	EncryptionPairwiseConsistencyTest(encryptor, decryptor);
 #endif
@@ -74,6 +69,7 @@ void EncryptionPairwiseConsistencyTest_FIPS_140_Only(const PK_Encryptor &encrypt
 
 void SignaturePairwiseConsistencyTest_FIPS_140_Only(const PK_Signer &signer, const PK_Verifier &verifier)
 {
+	CRYPTOPP_UNUSED(signer), CRYPTOPP_UNUSED(verifier);
 #if CRYPTOPP_ENABLE_COMPLIANCE_WITH_FIPS_140_2
 	SignaturePairwiseConsistencyTest(signer, verifier);
 #endif
